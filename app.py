@@ -3,7 +3,7 @@ import joblib
 import json
 
 # Load your model
-model = joblib.load('rf_spam_detector.joblib')
+model = joblib.load(r"rf_spam_detector.joblib")
 
 def predict_spam(comment):
     prediction = model.predict([comment])
