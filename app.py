@@ -3,7 +3,7 @@ import joblib
 import json
 
 # Load your model
-model = joblib.load(r"rf_spam_detector.joblib")
+model = joblib.load('rf_spam_detector.joblib')
 
 def predict_spam(comment):
     prediction = model.predict([comment])
@@ -12,11 +12,14 @@ def predict_spam(comment):
 # Streamlit app
 st.title("Spam Detection API")
 
-# Create a form to accept input
-with st.form(key='spam_form'):
+# Check if the request is from an API call
+if st.button("Check for Spam"):
     comment = st.text_area("Enter your comment:")
-    submit_button = st.form_submit_button("Check for Spam")
+    result = predict_spam(comment)
+    st.json(result)
 
-    if submit_button:
-        result = predict_spam(comment)
-        st.json(result)
+# For API requests
+if st.experimental_get_query_params().get("comment"):
+    comment = st.experimental_get_query_params()["comment"][0]
+    result = predict_spam(comment)
+    st.json(result)
