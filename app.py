@@ -1,20 +1,22 @@
-from flask import Flask, request, jsonify
+import streamlit as st
 import joblib
-import os
+import json
 
-app = Flask(__name__)
+# Load your model
 model = joblib.load('rf_spam_detector.joblib')
 
-@app.route('/')
-def home():
-    return "Spam Detection API is running. Use /predict to make predictions."
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.json
-    comment = data['comment']
+def predict_spam(comment):
     prediction = model.predict([comment])
-    return jsonify({'spam': bool(prediction[0])})
+    return {'spam': bool(prediction[0])}
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+# Streamlit app
+st.title("Spam Detection API")
+
+# Create a form to accept input
+with st.form(key='spam_form'):
+    comment = st.text_area("Enter your comment:")
+    submit_button = st.form_submit_button("Check for Spam")
+
+    if submit_button:
+        result = predict_spam(comment)
+        st.json(result)
